@@ -14,7 +14,7 @@ Open the file and insert the following array somewhere in the object:
 "repositories": [
     {
         "type": "vcs",
-        "url": "https://github.com/fhsinchy/inspire"
+        "url": "https://github.com/showers-and-bs/transactional-outbox"
     }
 ]
 ```
