@@ -13,6 +13,18 @@
             "email": "predrag.rakonjac@quantox.com"
         }
     ],
-    "minimum-stability": "dev",
-    "require": {}
+    "require": {
+        "php": "^8.1",
+        "anik/laravel-amqp": "^1.4"
+    },
+    "require-dev": {},
+    "extra": {
+        "laravel": {
+            "providers": [
+                "ShowersAndBs\\TransactionalOutbox\\TransactionalOutboxServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
 }
