@@ -15,7 +15,7 @@ Get into it and run `git clone git@github.com:showers-and-bs/transactional-outbo
 The folder structure should look like this:
 
 <pre>
-    <code>...
+<code>...
 &#9500;&#9472;&#9472; content-service
 &#9474;   &#9492;&#9472;&#9472; composer.json
 &#9500;&#9472;&#9472; packages
@@ -41,7 +41,7 @@ Add the following "repositories" key below the "scripts" section.
 You can now require your local package in the Laravel application using chosen namespace of the package.
 
 ```sh
-composer require showers-and-bs/transactional-outbox
+composer require showers-and-bs/transactional-outbox:dev-master
 ```
 
 ## Usage
