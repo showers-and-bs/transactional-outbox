@@ -16,11 +16,13 @@ The folder structure should look like this:
 
 <pre>
 <code>...
-&#9500;&#9472;&#9472; content-service
-&#9474;   &#9492;&#9472;&#9472; composer.json
 &#9500;&#9472;&#9472; packages
 &#9474;   &#9492;&#9472;&#9472; transactional-outbox
 &#9474;       &#9492;&#9472;&#9472; composer.json
+&#9500;&#9472;&#9472; content-service
+&#9474;   &#9492;&#9472;&#9472; composer.json
+&#9500;&#9472;&#9472; member-service
+&#9474;   &#9492;&#9472;&#9472; composer.json
 ...</code>
 </pre>
 
@@ -33,7 +35,13 @@ Add the following "repositories" key below the "scripts" section.
     "repositories": [
         {
             "type": "path",
-            "url": "../packages/transactional-outbox"
+            "url": "../packages/transactional-outbox",
+            "options": {
+                "symlink": true,
+                "versions": {
+                    "showers-and-bs/transactional-outbox": "dev-master"
+                }
+            }
         }
     ],
 ```
