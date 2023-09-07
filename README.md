@@ -8,6 +8,28 @@ Read [this nice explanation](https://phpnews.io/feeditem/reliable-event-dispatch
 
 The package intended only for the project ThirstyX, it is not in Packagist.
 
+Add path to Github repository to your composer.json file.
+
+```json
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@github.com:showers-and-bs/transactional-outbox.git"
+        }
+    ],
+```
+Now run composer require to pull in the package.
+
+```sh
+composer require showers-and-bs/transactional-outbox
+```
+## Usage
+
+> To be described
+
+
+## For local development
+
 Create folder named **packages** in the same level where resides microservice folders.
 
 Get into it and run `git clone git@github.com:showers-and-bs/transactional-outbox.git`.
@@ -26,33 +48,8 @@ The folder structure should look like this:
 ...</code>
 </pre>
 
-
-Now you’ll have to make a slight adjustment to your composer.json file of the main app.
-
-Add the following "repositories" key below the "scripts" section.
-
-```json
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../packages/transactional-outbox",
-            "options": {
-                "symlink": true,
-                "versions": {
-                    "showers-and-bs/transactional-outbox": "dev-master"
-                }
-            }
-        }
-    ],
-```
-
-You can now require your local package in the Laravel application using chosen namespace of the package.
+Now get into the folder `vendor/showers-and-bs`, delete folder `transactional-outbox` and crate symlink to the folder `packages/transactional-outbox`.
 
 ```sh
-composer require showers-and-bs/transactional-outbox:dev-master
+ln -s ../../../packages/transactional-outbox/ ./transactional-outbox
 ```
-
-## Usage
-
-> To be described
-

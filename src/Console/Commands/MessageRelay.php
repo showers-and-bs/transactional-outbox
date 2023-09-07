@@ -27,23 +27,11 @@ class MessageRelay extends Command
      */
     public function handle()
     {
-        // dispatch messages for publishing
-        $run = function() {
+        $this->info("RELAY: Start dispatching messages from transactional outbox table...");
 
-            $messagesToPublish = (new OutgoingMessage)->getPendingMessages();
+        $run = [$this, 'dispatchPendingMessages'];
 
-            if($messagesToPublish->count() === 0) {
-                return;
-            }
-
-            $messagesToPublish
-                ->each(function ($message) {
-                    $message->setSending();
-                    MessagePublishingRun::dispatch($message);
-                });
-        };
-
-        // main
+        // message relay deamon
         while (true) {
             $pause = 1000 * 1000; // wait 1s between cycles
 
@@ -60,5 +48,40 @@ class MessageRelay extends Command
 
             usleep($pause);
         }
+    }
+
+    /**
+     * Dispatch pending messages from outboc to the message broker
+     *
+     * @return void
+     */
+    public function dispatchPendingMessages()
+    {
+        $messagesToPublish = (new OutgoingMessage)->getPendingMessages();
+
+        if($messagesToPublish->count() === 0) {
+            return;
+        }
+
+        $messagesToPublish
+            ->each(function ($message) {
+                $message->setSending();
+                MessagePublishingRun::dispatch($message);
+            });
+    }
+
+    /**
+     * Write a string as standard output and log.
+     *
+     * @param  string  $string
+     * @param  string|null  $style
+     * @param  int|string|null  $verbosity
+     * @return void
+     */
+    public function line($string, $style = null, $verbosity = null)
+    {
+        parent::line($string, $style, $verbosity);
+
+        \Illuminate\Support\Facades\Log::info($string);
     }
 }

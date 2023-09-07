@@ -14,6 +14,6 @@ class MessagePublishingComplete
     {
         $event->message->setPublished();
 
-        \Log::debug(__METHOD__, ["Message {$event->message->event_id} published successfully"]);
+        \Log::debug("RELAY: {$event->message->event}:{$event->message->event_id} published successfully");
     }
 }

@@ -2,6 +2,9 @@
 
 namespace ShowersAndBs\TransactionalOutbox\Jobs;
 
+use Anik\Amqp\Exchanges\Fanout;
+use Anik\Amqp\ProducibleMessage;
+use Anik\Laravel\Amqp\Facades\Amqp;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -52,20 +55,22 @@ class PublishMessage implements ShouldQueue
     public function handle()
     {
         if($this->message->isPublished()) {
-            \Log::info(__METHOD__, ["Message {$this->message->event_id} has been published"]);
+            \Log::info("RELAY: :Message {$this->message->event}:{$this->message->event_id} has been published");
             return;
         }
 
-        $message = $this->message->only(['event_id','event','payload']);
+        $message = $this->message->only(['created_at','event_id','event','payload']);
 
-        $content = new \Anik\Amqp\ProducibleMessage(json_encode($message));
+        $messageDTO = \ShowersAndBs\TransactionalOutbox\DTO\ThirstyxMessage::createFromArray($message);
+
+        $content = new ProducibleMessage($messageDTO->serialize());
         $routeKey = '';
-        $exchange = new \Anik\Amqp\Exchanges\Fanout('amq.fanout');
+        $exchange = new Fanout('amq.fanout');
         $options = [];
 
         try {
 
-            \Anik\Laravel\Amqp\Facades\Amqp::getProducer()->publishBasic($content, $routeKey, $exchange, $options);
+            Amqp::getProducer()->publishBasic($content, $routeKey, $exchange, $options);
 
         } catch (\Throwable $e) {
 

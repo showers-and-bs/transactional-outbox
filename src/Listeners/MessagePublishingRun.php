@@ -14,6 +14,6 @@ class MessagePublishingRun
     {
         \ShowersAndBs\TransactionalOutbox\Jobs\PublishMessage::dispatch($event->message);
 
-        \Log::debug(__METHOD__, ["Message {$event->message->event_id} ready for publishing"]);
+        \Log::debug("RELAY: {$event->message->event}:{$event->message->event_id} ready for publishing");
     }
 }

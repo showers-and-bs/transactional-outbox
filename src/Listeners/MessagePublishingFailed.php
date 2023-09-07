@@ -14,6 +14,6 @@ class MessagePublishingFailed
     {
         $event->message->setFailed();
 
-        \Log::debug(__METHOD__, ["Message {$event->message->event_id} publishing fail"]);
+        \Log::debug("RELAY: {$event->message->event}:{$event->message->event_id} publishing fail");
     }
 }
