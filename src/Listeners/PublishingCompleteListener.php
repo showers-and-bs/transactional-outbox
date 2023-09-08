@@ -4,13 +4,14 @@ namespace ShowersAndBs\TransactionalOutbox\Listeners;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use ShowersAndBs\TransactionalOutbox\Events\PublishingComplete;
 
-class MessagePublishingComplete
+class PublishingCompleteListener
 {
     /**
      * Handle the event.
      */
-    public function handle(\ShowersAndBs\TransactionalOutbox\Events\MessagePublishingComplete $event): void
+    public function handle(PublishingComplete $event): void
     {
         $event->message->setPublished();
 

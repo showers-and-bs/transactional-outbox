@@ -3,7 +3,7 @@
 namespace ShowersAndBs\TransactionalOutbox\Console\Commands;
 
 use Illuminate\Console\Command;
-use ShowersAndBs\TransactionalOutbox\Events\MessagePublishingRun;
+use ShowersAndBs\TransactionalOutbox\Events\PublishingRun;
 use ShowersAndBs\TransactionalOutbox\Models\OutgoingMessage;
 
 class MessageRelay extends Command
@@ -66,7 +66,7 @@ class MessageRelay extends Command
         $messagesToPublish
             ->each(function ($message) {
                 $message->setSending();
-                MessagePublishingRun::dispatch($message);
+                PublishingRun::dispatch($message);
             });
     }
 

@@ -3,6 +3,14 @@
 namespace ShowersAndBs\TransactionalOutbox;
 
 use Illuminate\Support\ServiceProvider;
+use ShowersAndBs\TransactionalOutbox\Contracts\ShouldBePublished;
+use ShowersAndBs\TransactionalOutbox\Events\PublishingComplete;
+use ShowersAndBs\TransactionalOutbox\Events\PublishingFailed;
+use ShowersAndBs\TransactionalOutbox\Events\PublishingRun;
+use ShowersAndBs\TransactionalOutbox\Listeners\PublishingCompleteListener;
+use ShowersAndBs\TransactionalOutbox\Listeners\PublishingFailedListener;
+use ShowersAndBs\TransactionalOutbox\Listeners\PublishingRunListener;
+use ShowersAndBs\TransactionalOutbox\Listeners\ShouldBePublishedListener;
 
 class TransactionalOutboxServiceProvider extends ServiceProvider
 {
@@ -12,24 +20,18 @@ class TransactionalOutboxServiceProvider extends ServiceProvider
      * @var array<class-string, array<int, class-string>>
      */
     protected $listen = [
-        \ShowersAndBs\TransactionalOutbox\Events\MessagePublishingRun::class => [
-            \ShowersAndBs\TransactionalOutbox\Listeners\MessagePublishingRun::class,
+        PublishingRun::class => [
+            PublishingRunListener::class,
         ],
-        \ShowersAndBs\TransactionalOutbox\Events\MessagePublishingFailed::class => [
-            \ShowersAndBs\TransactionalOutbox\Listeners\MessagePublishingFailed::class,
+        PublishingFailed::class => [
+            PublishingFailedListener::class,
         ],
-        \ShowersAndBs\TransactionalOutbox\Events\MessagePublishingComplete::class => [
-            \ShowersAndBs\TransactionalOutbox\Listeners\MessagePublishingComplete::class,
+        PublishingComplete::class => [
+            PublishingCompleteListener::class,
         ],
-    ];
-
-    /**
-     * The subscriber classes to register.
-     *
-     * @var array
-     */
-    protected $subscribe = [
-        \ShowersAndBs\TransactionalOutbox\Listeners\PublishableEventSubscriber::class,
+        ShouldBePublished::class => [
+            ShouldBePublishedListener::class,
+        ],
     ];
 
     /**
@@ -76,10 +78,6 @@ class TransactionalOutboxServiceProvider extends ServiceProvider
             foreach (array_unique($listeners, SORT_REGULAR) as $listener) {
                 \Illuminate\Support\Facades\Event::listen($event, $listener);
             }
-        }
-
-        foreach ($this->subscribe as $subscriber) {
-            \Illuminate\Support\Facades\Event::subscribe($subscriber);
         }
     }
 

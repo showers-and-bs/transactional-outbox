@@ -4,13 +4,14 @@ namespace ShowersAndBs\TransactionalOutbox\Listeners;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use ShowersAndBs\TransactionalOutbox\Events\PublishingFailed;
 
-class MessagePublishingFailed
+class PublishingFailedListener
 {
     /**
      * Handle the event.
      */
-    public function handle(\ShowersAndBs\TransactionalOutbox\Events\MessagePublishingFailed $event): void
+    public function handle(PublishingFailed $event): void
     {
         $event->message->setFailed();
 

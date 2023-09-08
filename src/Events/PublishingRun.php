@@ -6,7 +6,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use ShowersAndBs\TransactionalOutbox\Models\OutgoingMessage;
 
-class MessagePublishingFailed
+class PublishingRun
 {
     use Dispatchable, SerializesModels;
 

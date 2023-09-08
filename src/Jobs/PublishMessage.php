@@ -11,8 +11,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use ShowersAndBs\TransactionalOutbox\Events\MessagePublishingComplete;
-use ShowersAndBs\TransactionalOutbox\Events\MessagePublishingFailed;
+use ShowersAndBs\TransactionalOutbox\Events\PublishingComplete;
+use ShowersAndBs\TransactionalOutbox\Events\PublishingFailed;
 
 class PublishMessage implements ShouldQueue
 {
@@ -61,7 +61,7 @@ class PublishMessage implements ShouldQueue
 
         $message = $this->message->only(['created_at','event_id','event','payload']);
 
-        $messageDTO = \ShowersAndBs\TransactionalOutbox\DTO\ThirstyxMessage::createFromArray($message);
+        $messageDTO = \ShowersAndBs\ThirstyEvents\DTO\RabbitMqMessagePayload::createFromArray($message);
 
         $content = new ProducibleMessage($messageDTO->serialize());
         $routeKey = '';
@@ -74,11 +74,11 @@ class PublishMessage implements ShouldQueue
 
         } catch (\Throwable $e) {
 
-            MessagePublishingFailed::dispatch($this->message);
+            PublishingFailed::dispatch($this->message);
 
             throw new \Exception($e->getMessage(), 1);
         }
 
-        MessagePublishingComplete::dispatch($this->message);
+        PublishingComplete::dispatch($this->message);
     }
 }

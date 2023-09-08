@@ -24,8 +24,8 @@ class OutgoingMessage extends Model
     public function persistEvent(ShouldBePublished $event): void
     {
         $this->event_id = \Illuminate\Support\Str::uuid()->toString();
-        $this->event    = $event->getName();
-        $this->payload  = $event->getPayload();
+        $this->event    = $event::class;
+        $this->payload  = serialize($event);
         $this->status   = self::PENDING;
 
         $this->save();
