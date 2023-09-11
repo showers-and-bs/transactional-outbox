@@ -4,7 +4,7 @@ namespace ShowersAndBs\TransactionalOutbox\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use ShowersAndBs\TransactionalOutbox\Contracts\ShouldBePublished;
+use ShowersAndBs\ThirstyEvents\Contracts\ShouldBePublished;
 
 class OutgoingMessage extends Model
 {
@@ -19,7 +19,7 @@ class OutgoingMessage extends Model
     /**
      * Persist an publishable event to the database
      *
-     * @param  \ShowersAndBs\TransactionalOutbox\Contracts\ShouldBePublished $event
+     * @param  \ShowersAndBs\ThirstyEvents\Contracts\ShouldBePublished $event
      */
     public function persistEvent(ShouldBePublished $event): void
     {

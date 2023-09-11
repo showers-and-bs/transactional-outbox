@@ -3,7 +3,7 @@
 namespace ShowersAndBs\TransactionalOutbox;
 
 use Illuminate\Support\ServiceProvider;
-use ShowersAndBs\TransactionalOutbox\Contracts\ShouldBePublished;
+use ShowersAndBs\ThirstyEvents\Contracts\ShouldBePublished;
 use ShowersAndBs\TransactionalOutbox\Events\PublishingComplete;
 use ShowersAndBs\TransactionalOutbox\Events\PublishingFailed;
 use ShowersAndBs\TransactionalOutbox\Events\PublishingRun;
