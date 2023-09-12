@@ -76,7 +76,7 @@ class PublishMessage implements ShouldQueue
 
             PublishingFailed::dispatch($this->message);
 
-            throw new \Exception($e->getMessage(), 1);
+            throw $e;
         }
 
         PublishingComplete::dispatch($this->message);
