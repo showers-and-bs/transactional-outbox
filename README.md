@@ -31,7 +31,7 @@ How to use the package in your Laravel application?
 
 When something happens that you want to share with the world i.e interested microservices, you just need to dispatch the "publishable event". It is an [event class](https://laravel.com/docs/10.x/events#defining-events) that implements **ShouldBePublished** interface exposed by the package [**showers-and-bs/thirsty-events**](https://github.com/showers-and-bs/thirsty-events). The package listens for publishable events and handles them in [**ShouldBePublishedListener@handle**](https://github.com/showers-and-bs/transactional-outbox/blob/master/src/Listeners/ShouldBePublishedListener.php) method. As pattern describes, in the first step we should store messages that are intended for delivery to our message outbox (in our case the table name is **outgoing_messages**) and that exactly is what the package do. So dispatching publishable event can be and should be part of a database transaction together with database operations that precede to event dispatching.
 
-In the second step, when the message is finally stored in the database, the package relays them to the message broker. To run the message relay deamon, execute the following command.
+In the second step, when the message is finally stored in the database, the package relays them to the message broker. To run [the message relay deamon](https://github.com/showers-and-bs/transactional-outbox/blob/master/src/Console/Commands/MessageRelay.php), execute the following command.
 
 ```sh
 php artisan amqp:relay

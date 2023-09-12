@@ -43,6 +43,7 @@ class MessageRelay extends Command
                 // In case of any error, for example the database is not available
                 // Do not interrupt the operation of the daemon relay
                 \Log::error(__METHOD__, [$e->getMessage()]);
+                report($e);
                 $pause = 10 * 1000 * 1000; // wait 10s for next cycle, so as not to be overwhelmed by error messages
             }
 
