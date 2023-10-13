@@ -64,6 +64,7 @@ class TransactionalOutboxServiceProvider extends ServiceProvider
     {
         $this->commands([
             \ShowersAndBs\TransactionalOutbox\Console\Commands\MessageRelay::class,
+            \ShowersAndBs\TransactionalOutbox\Console\Commands\MessageOutbox::class,
         ]);
     }
 
