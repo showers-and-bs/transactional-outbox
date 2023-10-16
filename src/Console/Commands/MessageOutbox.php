@@ -14,8 +14,11 @@ class MessageOutbox extends Command
      */
     protected $signature = 'amqp:outbox
                             {--stat : Display statistics}
-                            {--id= : Display message with given id}
-                            {--resend : Change message status to 0:PENDING, the message is selected by the option --id}
+                            {--id= : Display message with the given id}
+                            {--event-id= : Display messages with the given event_id}
+                            {--resend : Change message status to 0:PENDING, the message is selected by the options --id or --event-id}
+                            {--status= : Display messages with the given status}
+                            {--event= : Display messages with the given event, the event name can be shorten}
                             {--limit=10 : Display limited number of messages}
                             {--no-limit : Display all messages}';
 
@@ -45,6 +48,7 @@ class MessageOutbox extends Command
     {
         $stat = $this->option('stat') ?? false;
         $id = $this->option('id');
+        $eventId = $this->option('event-id');
         $resend = $this->option('resend') ?? false;
         $noLimit = $this->option('no-limit') ?? false;
         $limit = $this->option('limit');
@@ -52,6 +56,21 @@ class MessageOutbox extends Command
         if($stat) {
             $this->showStatistics();
             return;
+        }
+
+        if($id && $eventId) {
+            $this->error('Only one of these two, --id or --event-id, can be provided');
+            return;
+        }
+
+        if($eventId) {
+            try {
+                $message = $this->getMessageForGivenEventId($eventId);
+                $id = $message->id;
+            } catch (\Exception $e) {
+                $this->error($e->getMessage());
+                return;
+            }
         }
 
         if ($id) {
@@ -234,4 +253,16 @@ class MessageOutbox extends Command
         );
     }
 
+    /**
+     * Ge
+     *
+     * @param  string $eventId [description]
+     * @return [type]          [description]
+     */
+    public function getMessageForGivenEventId(string $eventId)
+    {
+        return OutgoingMessage::query()
+            ->where('event_id', $eventId)
+            ->firstOrFail();
+    }
 }
