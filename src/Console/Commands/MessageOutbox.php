@@ -66,17 +66,26 @@ class MessageOutbox extends Command
     private function showList(int $limit = null)
     {
         $messages = OutgoingMessage::query()
-            ->select(['id', 'event_id', 'event', 'status'])
+            ->select(['id', 'created_at', 'updated_at', 'event_id', 'event', 'status'])
             ->orderBy('id', 'desc')
             ->when($limit, function($query) use ($limit) {
                 $query->limit($limit);
             })
             ->get()
-            ->each(fn($item) => $item->status2 = $this->statusMap[$item->status]);
+            ->map(function($item) {
+                return [
+                    $item->id,
+                    date('Y-m-d H:i:s', strtotime($item->created_at)),
+                    date('Y-m-d H:i:s', strtotime($item->updated_at)),
+                    $item->event_id,
+                    $item->event,
+                    $item->status . '|' . $this->statusMap[$item->status],
+                ];
+            });
 
         $this->table(
-            ['id', 'event_id', 'event', 'status', 'descriptive status'],
-            $messages->toArray()
+            ['id', 'created_at', 'updated_at', 'event_id', 'event', 'status'],
+            $messages
         );
     }
 
@@ -91,11 +100,13 @@ class MessageOutbox extends Command
             $message = OutgoingMessage::findOrFail($id);
 
             $output = [
-                ['id: ', $message->id],
-                ['event_id: ', $message->event_id],
-                ['event: ', $message->event],
-                ['payload: ', unserialize($message->payload)],
-                ['status: ', $message->status . '|' . $this->statusMap[$message->status]],
+                ['id', $message->id],
+                ['created_at', date('Y-m-d H:i:s', strtotime($message->created_at))],
+                ['updated_at', date('Y-m-d H:i:s', strtotime($message->updated_at))],
+                ['event_id', $message->event_id],
+                ['event', $message->event],
+                ['payload', unserialize($message->payload)],
+                ['status', $message->status . '|' . $this->statusMap[$message->status]],
             ];
 
             $this->table(
