@@ -43,6 +43,24 @@ In the second step, when the message is finally stored in the database, the pack
 php artisan amqp:relay
 ```
 
+## Console commands
+
+There are and bunch of console commands that should help development and monitoring.
+
+Here are examples of use.
+
+```sh
+php artisan amqp:outbox --help # to list all available options
+php artisan amqp:outbox # list the last 10 messages
+php artisan amqp:outbox --limit=30 # list the last 30 messages
+php artisan amqp:outbox --no-limit # list all the messages
+php artisan amqp:outbox --no-limit --status=3 # list all the messages with the status 3 (PUBLISHED)
+php artisan amqp:outbox --no-limit --event=UserLogin # list all the messages for the event UserLogin
+php artisan amqp:outbox --id=7 # display details for the message with id=7
+php artisan amqp:outbox --event-id=a12f907c-115b-4eb4-ad20-140e547b98c6 # display details for the message with event id =a12f907c-115b-4eb4-ad20-140e547b98c6
+php artisan amqp:outbox --id=7 --resend # change status of the message with id=7 to PENDING and that way give signal to the message relay to send the message
+```
+
 ## Guide for package development
 
 Create folder named **packages** in the same level where reside microservice applications.

@@ -33,7 +33,7 @@ class MessageRelay extends Command
 
         // message relay deamon
         while (true) {
-            $pause = 1000 * 1000; // wait 1s between cycles
+            $pause = 1000 * 250; // wait 0.25s between cycles
 
             try {
 
