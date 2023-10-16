@@ -45,7 +45,7 @@ php artisan amqp:relay
 
 ## Console commands
 
-There are and bunch of console commands that should help development and monitoring.
+There is a bunch of console commands that should help development and debugging.
 
 Here are examples of use.
 
