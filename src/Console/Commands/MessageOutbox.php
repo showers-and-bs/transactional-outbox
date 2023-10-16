@@ -13,8 +13,9 @@ class MessageOutbox extends Command
      * @var string
      */
     protected $signature = 'amqp:outbox
+                            {--stat : Display statistics}
                             {--id= : Display message with given id}
-                            {--resend : Change message status to 0:PENDING}
+                            {--resend : Change message status to 0:PENDING, the message is selected by the option --id}
                             {--limit=10 : Display limited number of messages}
                             {--no-limit : Display all messages}';
 
@@ -42,10 +43,16 @@ class MessageOutbox extends Command
      */
     public function handle()
     {
+        $stat = $this->option('stat') ?? false;
         $id = $this->option('id');
         $resend = $this->option('resend') ?? false;
         $noLimit = $this->option('no-limit') ?? false;
         $limit = $this->option('limit');
+
+        if($stat) {
+            $this->showStatistics();
+            return;
+        }
 
         if ($id) {
             if(! is_numeric($id)) {
@@ -153,9 +160,78 @@ class MessageOutbox extends Command
             $message->status = OutgoingMessage::PENDING;
             $message->save();
 
+            $this->info("Status of the message id:{$message->id} changed to PENDING");
+
         } catch(\Exception $e) {
             $this->error($e->getMessage());
         }
+    }
+
+    /**
+     * Display statistical data
+     *
+     * @return void
+     */
+    private function showStatistics()
+    {
+        $this->line('Today');
+        $this->showStatisticsToday();
+
+        $this->newLine();
+
+        $this->line('Overall');
+        $this->showStatisticsAllTime();
+    }
+
+    /**
+     * Display statistical data
+     *
+     * @return void
+     */
+    private function showStatisticsAllTime()
+    {
+        $groupByStatus = OutgoingMessage::query()
+            ->selectRaw('status, count(status) as count')
+            ->groupBy('status')
+            ->orderBy('status')
+            ->get()
+            ->map(function($item) {
+                return [
+                    $item->status . '|' . $this->statusMap[$item->status],
+                    $item->count,
+                ];
+            });
+
+        $this->table(
+            ['status', 'count'],
+            $groupByStatus
+        );
+    }
+
+    /**
+     * Display statistical data for today
+     *
+     * @return void
+     */
+    private function showStatisticsToday()
+    {
+        $groupByStatus = OutgoingMessage::query()
+            ->selectRaw('status, count(status) as count')
+            ->whereDate('created_at', date('Y-m-d'))
+            ->groupBy('status')
+            ->orderBy('status')
+            ->get()
+            ->map(function($item) {
+                return [
+                    $item->status . '|' . $this->statusMap[$item->status],
+                    $item->count,
+                ];
+            });
+
+        $this->table(
+            ['status', 'count'],
+            $groupByStatus
+        );
     }
 
 }
