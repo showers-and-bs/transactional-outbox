@@ -16,7 +16,7 @@ class MessageOutbox extends Command
                             {--stat : Display statistics}
                             {--id= : Display message with the given id}
                             {--event-id= : Display messages with the given event_id}
-                            {--resend : Change message status to 0:PENDING, the message is selected by the options --id or --event-id}
+                            {--resend : Change message status to 0:PENDING, the message is selected by one of the options --id or --event-id}
                             {--status= : Display messages with the given status}
                             {--event= : Display messages with the given event, the event name can be shorten}
                             {--limit=10 : Display limited number of messages}
@@ -52,6 +52,8 @@ class MessageOutbox extends Command
         $resend = $this->option('resend') ?? false;
         $noLimit = $this->option('no-limit') ?? false;
         $limit = $this->option('limit');
+        $status = $this->option('status');
+        $event = $this->option('event');
 
         if($stat) {
             $this->showStatistics();
@@ -95,11 +97,11 @@ class MessageOutbox extends Command
         }
 
         if ($noLimit) {
-            $this->showList();
+            $this->showList(null, $status, $event);
             return;
         }
 
-        $this->showList($limit);
+        $this->showList($limit, $status, $event);
     }
 
     /**
@@ -107,11 +109,17 @@ class MessageOutbox extends Command
      *
      * @return void
      */
-    private function showList(int $limit = null)
+    private function showList(int $limit = null, int $status = null, string $event = null)
     {
         $messages = OutgoingMessage::query()
             ->select(['id', 'created_at', 'updated_at', 'event_id', 'event', 'status'])
             ->orderBy('id', 'desc')
+            ->when(! is_null($status), function($query) use ($status) {
+                $query->where('status', $status);
+            })
+            ->when(! is_null($event), function($query) use ($event) {
+                $query->where('event', 'like', "%$event%");
+            })
             ->when($limit, function($query) use ($limit) {
                 $query->limit($limit);
             })
