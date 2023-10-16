@@ -12,7 +12,10 @@ class MessageOutbox extends Command
      *
      * @var string
      */
-    protected $signature = 'amqp:outbox {--limit=10} {--no-limit}';
+    protected $signature = 'amqp:outbox
+                            {--id= : Display message with given id}
+                            {--limit=10 : Display limited number of messages}
+                            {--no-limit : Display all messages}';
 
     /**
      * The console command description.
@@ -38,10 +41,16 @@ class MessageOutbox extends Command
      */
     public function handle()
     {
-        $noLimit = $this->option('no-limit');
+        $id = $this->option('id');
+        $noLimit = $this->option('no-limit') ?? false;
         $limit = $this->option('limit');
 
-        if($noLimit) {
+        if ($id) {
+            $this->showMessage($id);
+            return;
+        }
+
+        if ($noLimit) {
             $this->showList();
             return;
         }
@@ -69,6 +78,33 @@ class MessageOutbox extends Command
             ['id', 'event_id', 'event', 'status', 'descriptive status'],
             $messages->toArray()
         );
+    }
+
+    /**
+     * Show messages in the list
+     *
+     * @return void
+     */
+    private function showMessage(int $id)
+    {
+        try {
+            $message = OutgoingMessage::findOrFail($id);
+
+            $output = [
+                ['id: ', $message->id],
+                ['event_id: ', $message->event_id],
+                ['event: ', $message->event],
+                ['payload: ', unserialize($message->payload)],
+                ['status: ', $message->status . '|' . $this->statusMap[$message->status]],
+            ];
+
+            $this->table(
+                ['property', 'value'],
+                $output
+            );
+        } catch(\Exception $e) {
+            $this->error($e->getMessage());
+        }
     }
 
 }
