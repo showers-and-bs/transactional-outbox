@@ -14,6 +14,7 @@ class MessageOutbox extends Command
      */
     protected $signature = 'amqp:outbox
                             {--id= : Display message with given id}
+                            {--resend : Change message status to 0:PENDING}
                             {--limit=10 : Display limited number of messages}
                             {--no-limit : Display all messages}';
 
@@ -42,11 +43,28 @@ class MessageOutbox extends Command
     public function handle()
     {
         $id = $this->option('id');
+        $resend = $this->option('resend') ?? false;
         $noLimit = $this->option('no-limit') ?? false;
         $limit = $this->option('limit');
 
         if ($id) {
+            if(! is_numeric($id)) {
+                $this->error('Option --id must be integer');
+                return;
+            }
+
             $this->showMessage($id);
+
+            if ($resend) {
+                $this->resendMessage($id);
+                return;
+            }
+
+            return;
+        }
+
+        if ($resend && is_null($id)) {
+            $this->error('Option --id must be set');
             return;
         }
 
@@ -90,7 +108,7 @@ class MessageOutbox extends Command
     }
 
     /**
-     * Show messages in the list
+     * Display message details
      *
      * @return void
      */
@@ -113,6 +131,28 @@ class MessageOutbox extends Command
                 ['property', 'value'],
                 $output
             );
+        } catch(\Exception $e) {
+            $this->error($e->getMessage());
+        }
+    }
+
+    /**
+     * Resend the message by changing status to PENDING
+     *
+     * @return void
+     */
+    private function resendMessage(int $id)
+    {
+        try {
+            $message = OutgoingMessage::find($id);
+
+            if(is_null($message) || $message->status === OutgoingMessage::PENDING) {
+                return;
+            }
+
+            $message->status = OutgoingMessage::PENDING;
+            $message->save();
+
         } catch(\Exception $e) {
             $this->error($e->getMessage());
         }
